@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cn.hnust.dao.UserDao">
+
+   <!--查询-->
+   <select id="findUserById" parameterType="Integer" resultType="com.cn.hnust.entity.User">
+   SELECT id,user_name name,user_password password ,user_code code,user_type type
+    FROM user_t WHERE id = #{id}
+   </select>
+   <!--模糊查询
+   #占位符
+   $字符串拼接 sql注入（不建议使用）
+   也使用占位符1.直接将整个当成参数在代码中传递时手动拼接
+   2.sql提供
+   $#区别   #里面变量名随意   ${变量名}不能随便写如果是常用类型，必须用value
+   -->
+   <select id="findByName" parameterType="String" resultType="com.cn.hnust.entity.User">
+      SELECT id,user_name name,user_password password ,user_code code,user_type type
+       FROM  user_t WHERE name LIKE "%"#{name}"%"
+   </select>
+
+   <!--添加用户  如果参数是引用类型  占位符的赋值方式为ognl表达式的方式{属性名}-->
+   <insert id="UserAdd" parameterType="com.cn.hnust.entity.User">
+      <selectKey order="AFTER" resultType="int" keyProperty="id">
+         SELECT LAST_INSERT_ID()
+      </selectKey>
+      INSERT INTO user_t (id,user_name,user_password,user_code,user_type)VALUES(#{id},#{name},#{password},#{code},#{type})
+   </insert>
+
+   <!--删除用户-->
+   <delete id="UserDelete" parameterType="int">
+      DELETE FROM user_t WHERE id=#{id}
+   </delete>
+
+   <!--修改用户-->
+   <update id="UserUpdate" parameterType="com.cn.hnust.entity.User">
+      UPDATE user_t set user_name=#{name},user_password=#{password},user_code=#{code},user_type=#{type} WHERE id=#{id}
+   </update>
+</mapper>
